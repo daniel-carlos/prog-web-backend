@@ -12,7 +12,7 @@ def login():
     _password = data['password']
     user = login_with_credentials(_username, _password)
     if user != None:
-        token = jwt.encode({"name": user['name'], "admin": user['admin'], "user_id": user['id']}, "SECRET", algorithm="HS256")
+        token = generate_token(user['name'], user['admin'], user['id'])
         return jsonify({
             "ok": True,
             "msg": "Successfully logged in.",
