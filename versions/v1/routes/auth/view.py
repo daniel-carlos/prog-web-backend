@@ -1,9 +1,7 @@
 from . import bp
 
 from flask import jsonify, request
-import json
 from .functions import *
-import jwt
 
 @bp.route("/login", methods=["POST"])
 def login():
@@ -17,6 +15,7 @@ def login():
             "ok": True,
             "msg": "Successfully logged in.",
             "user_id": user['id'],
+            "admin": False,
             "token": token
         })
     else:

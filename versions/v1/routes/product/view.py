@@ -45,9 +45,9 @@ def product(id):
 @bp.route("/product/list", methods=["POST"])
 def p_list_2():
     ids = request.json['ids']
-    print(request.headers.get("Authorization"))
+    int_ids = map(int, ids)
     products = []
-    for p in list_products_by_ids(ids):
+    for p in list_products_by_ids(int_ids):
         products.append({
             "name": p.name,
             "price": p.price,
