@@ -77,10 +77,13 @@ class ProductOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
+    amount = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
 
-    def __init__(self, product_id, category_id):
+    def __init__(self, product_id, order_id, amount):
         self.product_id = product_id
         self.order_id = order_id
+        self.amount = amount
+
 class Evaluation(db.Model):
     __tablename__ = 'eval'
     id = db.Column(db.Integer, primary_key=True)
