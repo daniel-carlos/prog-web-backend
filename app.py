@@ -13,3 +13,6 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONNECTION
 db = SQLAlchemy(app)
+
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
