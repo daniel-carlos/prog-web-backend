@@ -22,7 +22,7 @@ def login():
         "ok": True,
         "msg": "Successfully logged in.",
         "user_id": user['id'],
-        "admin": False,
+        "admin": user['admin'],
         "token": token
     })
 

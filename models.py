@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class Admin(db.Model):
     __tablename__ = 'admin'
@@ -68,6 +69,8 @@ class Order(db.Model):
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey(Client.id), nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(10), default="open")
 
     def __init__(self, client_id):
         self.client_id = client_id
@@ -77,11 +80,21 @@ class ProductOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
-    amount = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
+    amount = db.Column(db.Integer, default=1)
 
     def __init__(self, product_id, order_id, amount):
         self.product_id = product_id
         self.order_id = order_id
+        self.amount = amount
+
+class ProductInventory(db.Model):
+    __tablename__ = 'product_inventory'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
+    amount = db.Column(db.Integer, default=1)
+
+    def __init__(self, product_id, amount):
+        self.product_id = product_id
         self.amount = amount
 
 class Evaluation(db.Model):

@@ -1,7 +1,7 @@
 from fakeData import fakeUsers
 import jwt
 import os
-from models import Client
+from models import Client, Admin
 from app import db
 from email_validator import validate_email, EmailNotValidError
 
@@ -17,6 +17,27 @@ def getUser(user_id):
     return user
 
 def login_with_credentials(username, password):
+
+    # Verificar se é admin
+    admin = Admin.query.filter_by(adminname=username).first()
+
+    if admin != None:
+        if admin.password == password:
+            return {
+                "code": 0,
+                "name": admin.adminname,
+                "password": admin.password,
+                "email": admin.email,
+                "id": admin.id,
+                "admin": True,
+            }
+        else:
+            return {
+            "code": 2
+        } # Password incorreto
+
+
+
     user = Client.query.filter_by(username=username).first()
 
     if user == None:
@@ -26,7 +47,7 @@ def login_with_credentials(username, password):
     if user.password != password:
         return {
             "code": 2
-        } # Usuário não existe
+        } # Password incorreto
     
     return {
         "code": 0,
@@ -39,7 +60,13 @@ def login_with_credentials(username, password):
 
 def generate_token(name, is_admin, user_id):
     print(f"Secret {jwt_secret_key}")
-    token = jwt.encode({"name": name, "admin": is_admin, "user_id": user_id}, jwt_secret_key, algorithm="HS256")
+    token = jwt.encode({
+            "name": name,
+            "admin": is_admin, 
+            "user_id": user_id}, 
+            jwt_secret_key, 
+            algorithm="HS256",
+        )
     return token
 
 def password_check(passwd):
