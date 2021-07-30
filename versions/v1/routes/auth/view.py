@@ -21,8 +21,12 @@ def login():
     return jsonify({
         "ok": True,
         "msg": "Successfully logged in.",
-        "user_id": user['id'],
-        "admin": user['admin'],
+        "user": {
+                "id": user['id'],
+                "username": user['name'],
+                "email": user['email'],
+                "admin": user['admin'],
+            },
         "token": token
     })
 
