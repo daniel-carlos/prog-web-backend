@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, jsonify
 from app import app
 from versions import v1
@@ -10,5 +14,8 @@ def handshake():
     })
 
 if(__name__=="__main__"):
-    print("\n\n", app.url_map, "\n\n")
-    app.run(host="127.0.0.1", port=5005, debug=True)
+    print("All routes:\n", app.url_map, "\n")
+    HOST = os.getenv("HTTP_HOST", "127.0.0.1")
+    PORT = os.getenv("HTTP_PORT", 5005)
+    DEBUG = os.getenv("DEBUG", False)
+    app.run(host=HOST, port=PORT, debug=DEBUG)
