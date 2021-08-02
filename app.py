@@ -13,5 +13,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONNECTION
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+from flask_jwt_extended import JWTManager
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+jwt = JWTManager(app)
+
 from flask_migrate import Migrate
 migrate = Migrate(app, db)

@@ -5,6 +5,10 @@ from models import Client, Admin
 from app import db
 from email_validator import validate_email, EmailNotValidError
 
+
+from flask_jwt_extended import create_access_token, JWTManager
+
+
 jwt_secret_key = os.getenv("JWT_SECRET_KEY")
 
 def getUser(user_id):
@@ -16,7 +20,7 @@ def getUser(user_id):
     
     return user
 
-def login_with_credentials(username, password):
+def user_with_credentials(username, password):
 
     # Verificar se é admin
     admin = Admin.query.filter_by(adminname=username).first()
@@ -44,6 +48,7 @@ def login_with_credentials(username, password):
         return {
             "code": 1, 
         }# Usuário não existe
+
     if user.password != password:
         return {
             "code": 2

@@ -10,14 +10,19 @@ def login():
     _username = data['username']
     _password = data['password']
 
-    user = login_with_credentials(_username, _password)
+    user = user_with_credentials(_username, _password)
     if user['code'] != 0:
         return jsonify({
             "ok": False,
             "code": user['code'],
         })
 
-    token = generate_token(user['name'], user['admin'], user['id'])
+    token = create_access_token(identity={
+            "id": user["id"],
+            "username": _username,
+            "admin": user["admin"],
+        })
+
     return jsonify({
         "ok": True,
         "msg": "Successfully logged in.",
