@@ -33,12 +33,14 @@ class Product(db.Model):
     thumb = db.Column(db.String, unique=True, nullable=False)
     image = db.Column(db.String, unique=True, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, default=1)
 
-    def __init__(self, name, thumb, image, price):
+    def __init__(self, name, thumb, image, price, stock):
         self.name = name
         self.thumb = thumb
         self.image = image
         self.price = price
+        self.stock = stock
 
     def __repr__(self):
         return f"Produto {self.name} (R$ {round(self.price,2)})"
@@ -85,16 +87,6 @@ class ProductOrder(db.Model):
     def __init__(self, product_id, order_id, amount):
         self.product_id = product_id
         self.order_id = order_id
-        self.amount = amount
-
-class ProductInventory(db.Model):
-    __tablename__ = 'product_inventory'
-    id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
-    amount = db.Column(db.Integer, default=1)
-
-    def __init__(self, product_id, amount):
-        self.product_id = product_id
         self.amount = amount
 
 class Evaluation(db.Model):
