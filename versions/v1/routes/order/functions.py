@@ -9,10 +9,16 @@ def create_order(user_id, cart):
     
     for pid in cart.keys():
         amount = cart[pid]
-        product = Product.query.filter_by(id=pid)
+        pid = int(pid)
+        product = Product.query.filter_by(id=pid).first()
         if product == None:
             continue
         product_order = ProductOrder(pid, order.id, amount)
+        product.reserved = product.reserved + amount
+        
+        if product.reserved > product.stock:
+            return False
+
         db.session.add(product_order)
         db.session.flush()
     
@@ -108,11 +114,32 @@ def list_user_orders_admin(status="all"):
             "username": order.username,
         })
 
-
     return order_list
 
 
 def update_order(id, new_status):
     order = Order.query.filter_by(id=id).first()
+    _pos = ProductOrder.query.filter_by(
+        order_id=order.id
+    ).join( 
+        Product, Product.id == ProductOrder.product_id
+    ).with_entities(
+        Product.id,
+        ProductOrder.amount
+    ).all()
+
+    # se cancelar, RERTORNAR AO ESTOQUE
+    if new_status == "canceled":
+        # Pegar todos os ProductOrder desta compra
+        # Adicionar a cada um o reservado
+        for po in _pos:
+            prod = Product.query.filter_by(id=po.id).first()
+            prod.reserved = prod.reserved - po.amount
+            pass
+
+    # se confrmar, RETIRAR DO ESTOQUE
+    if new_status == "canceled":
+        pass
+
     order.status = new_status
     db.session.commit();

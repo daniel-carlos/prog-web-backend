@@ -34,13 +34,16 @@ class Product(db.Model):
     image = db.Column(db.String, unique=True, nullable=False)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, default=1)
+    reserved = db.Column(db.Integer, default=0)
+    limit = db.Column(db.Integer, default=0)
 
-    def __init__(self, name, thumb, image, price, stock):
+    def __init__(self, name, thumb, image, price, limit=5):
         self.name = name
         self.thumb = thumb
         self.image = image
         self.price = price
-        self.stock = stock
+        self.reserved = 0
+        self.limit = limit
 
     def __repr__(self):
         return f"Produto {self.name} (R$ {round(self.price,2)})"
