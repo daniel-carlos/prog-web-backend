@@ -15,7 +15,7 @@ def handshake():
 
 if(__name__=="__main__"):
     print("All routes:\n", app.url_map, "\n")
-    HOST = os.getenv("HTTP_HOST", "127.0.0.1")
+    HOST = os.getenv("HTTP_HOST", "192.168.0.5")
     PORT = os.getenv("HTTP_PORT", 5005)
     DEBUG = os.getenv("DEBUG", False)
     app.run(host=HOST, port=PORT, debug=DEBUG)

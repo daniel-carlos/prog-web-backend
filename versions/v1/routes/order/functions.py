@@ -7,12 +7,34 @@ def create_order(user_id, cart):
     db.session.add(order)
     db.session.flush()
     
+    info = {"logs": [], "errors": 0}
+
     for pid in cart.keys():
         amount = cart[pid]
         pid = int(pid)
         product = Product.query.filter_by(id=pid).first()
         if product == None:
             continue
+
+        # Se a compra exceder o limite
+        if amount > product.limit:
+            amount = product.limit
+            info["erros"] = info["erros"] + 1
+            info['logs'].append({
+                "code": 1, #produto acima do limite
+                "product": product,
+            })
+
+        # Se a compra irá exceder o estoque
+        if product.reserved + amount > product.stock:
+            amount = product.limit
+            info["erros"] = info["erros"] + 1
+            info['logs'].append({
+                "code": 2, #produto excedeu o estoque
+                "product": product,
+            })
+
+        
         product_order = ProductOrder(pid, order.id, amount)
         product.reserved = product.reserved + amount
         
@@ -22,9 +44,10 @@ def create_order(user_id, cart):
         db.session.add(product_order)
         db.session.flush()
     
-    db.session.commit()
+    if info["errors"] == 0:
+        db.session.commit()
     
-    return True
+    return info
 
 def list_user_orders(user_id, status="all"):
     _orders = Order.query.with_entities(
@@ -132,14 +155,21 @@ def update_order(id, new_status):
     if new_status == "canceled":
         # Pegar todos os ProductOrder desta compra
         # Adicionar a cada um o reservado
+        if order.status != "confirmed":
+            for po in _pos:
+                prod = Product.query.filter_by(id=po.id).first()
+                prod.reserved = prod.reserved - po.amount
+        else:
+            for po in _pos:
+                prod = Product.query.filter_by(id=po.id).first()
+                prod.stock = prod.stock + po.amount
+
+    # se confrmar, RETIRAR DO ESTOQUE
+    if new_status == "confirmed":
         for po in _pos:
             prod = Product.query.filter_by(id=po.id).first()
             prod.reserved = prod.reserved - po.amount
-            pass
-
-    # se confrmar, RETIRAR DO ESTOQUE
-    if new_status == "canceled":
-        pass
+            prod.stock = prod.stock - po.amount
 
     order.status = new_status
     db.session.commit();

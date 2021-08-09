@@ -1,6 +1,6 @@
 from .functions import *
 from . import bp
-from flask import request, jsonify
+from flask import request, jsonify, abort
 
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 
@@ -27,12 +27,11 @@ def route_list_orders():
 def route_create_order():
     data = request.json
     cart = data['cart']
-
     user = get_jwt_identity()
     
     create = create_order(user['id'], cart)
-
-    return "Example of route."
+    
+    return jsonify(create)
 
 
 @bp.route("order/confirm", methods=["POST"])
@@ -71,7 +70,7 @@ def route_deliver_order():
         "ok": True,
         "orders": orders
     })
-    
+
 
 @bp.route("order/cancel", methods=["POST"])
 @jwt_required()
