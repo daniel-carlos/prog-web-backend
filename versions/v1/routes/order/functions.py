@@ -162,7 +162,7 @@ def update_order(id, new_status):
         else:
             for po in _pos:
                 prod = Product.query.filter_by(id=po.id).first()
-                prod.stock = prod.stock + po.amount
+                prod.shipment = prod.shipment - po.amount
 
     # se confrmar, RETIRAR DO ESTOQUE
     if new_status == "confirmed":
@@ -170,6 +170,14 @@ def update_order(id, new_status):
             prod = Product.query.filter_by(id=po.id).first()
             prod.reserved = prod.reserved - po.amount
             prod.stock = prod.stock - po.amount
+            prod.shipment = prod.shipment + po.amount
+
+    # se confrmar, RETIRAR DO ESTOQUE
+    if new_status == "delivered":
+        for po in _pos:
+            prod = Product.query.filter_by(id=po.id).first()
+            prod.shipment = prod.shipment - po.amount
+            prod.total = prod.total + po.amount
 
     order.status = new_status
     db.session.commit();

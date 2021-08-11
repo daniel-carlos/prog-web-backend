@@ -35,6 +35,8 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, default=1)
     reserved = db.Column(db.Integer, default=0)
+    shipment = db.Column(db.Integer, default=0)
+    total = db.Column(db.Integer, default=0)
     limit = db.Column(db.Integer, default=0)
 
     def __init__(self, name, thumb, image, price, limit=5):
@@ -43,6 +45,8 @@ class Product(db.Model):
         self.image = image
         self.price = price
         self.reserved = 0
+        self.shipment = 0
+        self.total = 0
         self.limit = limit
 
     def __repr__(self):
