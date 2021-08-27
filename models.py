@@ -38,12 +38,14 @@ class Product(db.Model):
     shipment = db.Column(db.Integer, default=0)
     total = db.Column(db.Integer, default=0)
     limit = db.Column(db.Integer, default=0)
+    description = db.Column(db.String, unique=False, nullable=True)
 
-    def __init__(self, name, thumb, image, price, limit=5):
+    def __init__(self, name, thumb, description, image, price, limit=5):
         self.name = name
         self.thumb = thumb
         self.image = image
         self.price = price
+        self.description = description
         self.reserved = 0
         self.shipment = 0
         self.total = 0

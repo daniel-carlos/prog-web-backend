@@ -1,12 +1,47 @@
-from models import Product
+from models import Product, Category, ProductCategory
 from app import db
 from flask_jwt_extended import get_jwt_identity,verify_jwt_in_request
+
+def get_product(id):
+    p = Product.query.with_entities(
+        Product.name,
+        Product.price,
+        Product.thumb,
+        Product.image,
+        Product.id,
+        Product.description,
+        Category.name.label("cat_name"),
+        Category.id.label("cat_id"),
+    ).filter_by(id=int(id)).join(
+        ProductCategory, ProductCategory.product_id == Product.id
+    ).join(
+        Category, ProductCategory.category_id == Category.id
+    ).first()
+
+    return p
 
 def list_products(size=20, min_stock=0, admin=False):
     if size <= 0:
         size = int('inf')
 
-    _products = Product.query.filter(Product.stock >= min_stock).limit(size).all()
+    _products = Product.query.with_entities(
+        Product.name,
+        Product.price,
+        Product.thumb,
+        Product.image,
+        Product.id,
+        Product.reserved,
+        Product.shipment,
+        Product.total,
+        Product.description,
+        Product.stock,
+        Category.name.label("cat_name"),
+        Category.id.label("cat_id"),
+    ).filter(Product.stock >= min_stock).join(
+        ProductCategory, ProductCategory.product_id == Product.id
+    ).join(
+        Category, ProductCategory.category_id == Category.id
+    ).limit(size).all()
     products = []
 
     for p in _products:
@@ -21,6 +56,8 @@ def list_products(size=20, min_stock=0, admin=False):
                 "reserved": p.reserved,
                 "shipment": p.shipment,
                 "total": p.total,
+                "category": p.cat_name,
+                "category_id": p.cat_id,
                 "available": p.stock - p.reserved,
             })
         else:
@@ -30,6 +67,8 @@ def list_products(size=20, min_stock=0, admin=False):
                 "thumb": p.thumb,
                 "image": p.image,
                 "id": p.id,
+                "category": p.cat_name,
+                "category_id": p.cat_id,
                 "available": p.stock - p.reserved,
             })
     
@@ -70,3 +109,26 @@ def list_products_by_ids(ids, admin=False):
                 "limit": p.limit,
             })
     return products
+
+def update_product(product):
+    _product = Product.query.filter_by(id=product['id']).first()
+    _product.name = product['name']
+    _product.price = product['price']
+    _product.thumb = product['thumb']
+    _product.image = product['image']
+    _product.description = product['description']
+    db.session.commit()
+
+def list_categories():
+    cats = Category.query.all()
+    cat_list = {}
+    for cat in cats:
+        cat_list[str(cat.id)] = {
+            "name": cat.name,
+            "id": cat.id,
+        }
+        # cat_list.append({
+        #     "name": cat.name,
+        #     "id": cat.id,
+        # })
+    return cat_list
