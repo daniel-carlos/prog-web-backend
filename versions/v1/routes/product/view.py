@@ -104,7 +104,7 @@ def product_update_route():
 def create_route():
     p = request.json['product']
 
-    _product = Product(p['name'], p['thumb'], p['description'], p['image'], p['price'], p['category'])
+    _product = Product(p['name'], p['thumb'], p['description'], p['image'], p['price'], p['category_id'])
     db.session.add(_product)
     db.session.flush()
 

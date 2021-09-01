@@ -10,16 +10,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 import uuid
 
 
-@bp.route("/image/upload", methods=["POST"])
+@bp.route("/image/upload/<fname>", methods=["POST"])
 @jwt_required(optional=False)
-def upload_image():
+def upload_image(fname):
     file = request.files['image']
-
-    fname = get_unique_name()
     path = os.path.join(app.UPLOAD_FOLDER, f"{fname}.png")
-    
     file.save(path)
-    
     return ({
         "file_name": fname,
         "ok": True,

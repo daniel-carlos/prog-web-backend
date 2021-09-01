@@ -19,6 +19,16 @@ def get_product(id, admin=False):
     ).filter_by(id=int(id)).join(
         Category, Product.main_category == Category.id
     ).first()
+    if p == None:
+        return {
+            "name": "",
+            "price": 0,
+            "thumb": "",
+            "image": "",
+            "description": "",
+            "category_id": 1,
+            "available": 0,
+        }
 
     if admin:
         return {
@@ -26,6 +36,7 @@ def get_product(id, admin=False):
             "price": p.price,
             "thumb": p.thumb,
             "image": p.image,
+            "description": p.description,
             "id": p.id,
             "stock": p.stock,
             "reserved": p.reserved,
@@ -41,6 +52,7 @@ def get_product(id, admin=False):
             "price": p.price,
             "thumb": p.thumb,
             "image": p.image,
+            "description": p.description,
             "id": p.id,
             "category": p.cat_name,
             "category_id": p.cat_id,
@@ -146,14 +158,10 @@ def update_product(product):
 
 def list_categories():
     cats = Category.query.all()
-    cat_list = {}
+    cat_list = []
     for cat in cats:
-        cat_list[str(cat.id)] = {
+        cat_list.append({
             "name": cat.name,
             "id": cat.id,
-        }
-        # cat_list.append({
-        #     "name": cat.name,
-        #     "id": cat.id,
-        # })
+        })
     return cat_list
