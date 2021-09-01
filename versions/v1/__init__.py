@@ -1,7 +1,7 @@
 version_name = "v1"
 
 from flask.json import jsonify
-from .routes import auth, product, order
+from .routes import auth, product, order, content
 
 from app import app
 

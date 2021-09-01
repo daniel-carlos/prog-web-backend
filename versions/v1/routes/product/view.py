@@ -1,11 +1,13 @@
-from models import Category, ProductCategory
+import flask
+from models import  ProductCategory
 from os import abort
 from . import bp
-from app import jwt
 from flask import request, jsonify
+
 from .functions import *
 
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 @bp.route("/product/list", methods=["GET"])
 @jwt_required(optional=True)
@@ -57,31 +59,13 @@ def product(id):
     if p != None:
         return jsonify({
             "ok": True,
-            "product": {
-                "name": p.name,
-                "price": p.price,
-                "thumb": p.thumb,
-                "image": p.image,
-                "id": p.id,
-                "description": p.description,
-                "category_name": p.cat_name,
-                "category_id": p.cat_id,
-            }
+            "product": p
         })
     else:
         return jsonify({
             "ok": False,
             "msg": "Produto não encontrado",
-            "product": {
-                "name": "",
-                "price": 0,
-                "thumb": "",
-                "image": "",
-                "id": -1,
-                "description": "",
-                "category_name": "",
-                "category_id": -1,
-            }
+            "product": p
         })
 
 
@@ -120,7 +104,7 @@ def product_update_route():
 def create_route():
     p = request.json['product']
 
-    _product = Product(p['name'], p['thumb'], p['description'], p['image'], p['price'])
+    _product = Product(p['name'], p['thumb'], p['description'], p['image'], p['price'], p['category'])
     db.session.add(_product)
     db.session.flush()
 

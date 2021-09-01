@@ -2,7 +2,7 @@ from models import Product, Category, ProductCategory
 from app import db
 from flask_jwt_extended import get_jwt_identity,verify_jwt_in_request
 
-def get_product(id):
+def get_product(id, admin=False):
     p = Product.query.with_entities(
         Product.name,
         Product.price,
@@ -10,15 +10,42 @@ def get_product(id):
         Product.image,
         Product.id,
         Product.description,
+        Product.stock,
+        Product.reserved,
+        Product.shipment,
+        Product.total,
         Category.name.label("cat_name"),
         Category.id.label("cat_id"),
     ).filter_by(id=int(id)).join(
-        ProductCategory, ProductCategory.product_id == Product.id
-    ).join(
-        Category, ProductCategory.category_id == Category.id
+        Category, Product.main_category == Category.id
     ).first()
 
-    return p
+    if admin:
+        return {
+            "name": p.name,
+            "price": p.price,
+            "thumb": p.thumb,
+            "image": p.image,
+            "id": p.id,
+            "stock": p.stock,
+            "reserved": p.reserved,
+            "shipment": p.shipment,
+            "total": p.total,
+            "category": p.cat_name,
+            "category_id": p.cat_id,
+            "available": p.stock - p.reserved,
+        }
+    else:
+        return {
+            "name": p.name,
+            "price": p.price,
+            "thumb": p.thumb,
+            "image": p.image,
+            "id": p.id,
+            "category": p.cat_name,
+            "category_id": p.cat_id,
+            "available": p.stock - p.reserved,
+        }
 
 def list_products(size=20, min_stock=0, admin=False):
     if size <= 0:
@@ -38,9 +65,7 @@ def list_products(size=20, min_stock=0, admin=False):
         Category.name.label("cat_name"),
         Category.id.label("cat_id"),
     ).filter(Product.stock >= min_stock).join(
-        ProductCategory, ProductCategory.product_id == Product.id
-    ).join(
-        Category, ProductCategory.category_id == Category.id
+        Category, Product.main_category == Category.id
     ).limit(size).all()
     products = []
 

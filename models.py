@@ -26,33 +26,6 @@ class Client(db.Model):
     def __repr__(self):
         return f"Usuário {self.username}"
 
-class Product(db.Model):
-    __tablename__ = 'product'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    thumb = db.Column(db.String, unique=True, nullable=False)
-    image = db.Column(db.String, unique=True, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    stock = db.Column(db.Integer, default=1)
-    reserved = db.Column(db.Integer, default=0)
-    shipment = db.Column(db.Integer, default=0)
-    total = db.Column(db.Integer, default=0)
-    limit = db.Column(db.Integer, default=0)
-    description = db.Column(db.String, unique=False, nullable=True)
-
-    def __init__(self, name, thumb, description, image, price, limit=5):
-        self.name = name
-        self.thumb = thumb
-        self.image = image
-        self.price = price
-        self.description = description
-        self.reserved = 0
-        self.shipment = 0
-        self.total = 0
-        self.limit = limit
-
-    def __repr__(self):
-        return f"Produto {self.name} (R$ {round(self.price,2)})"
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -66,6 +39,36 @@ class Category(db.Model):
     
     def __repr__(self):
         return f"Categoria: {self.name}"
+
+class Product(db.Model):
+    __tablename__ = 'product'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    thumb = db.Column(db.String, unique=True, nullable=False)
+    image = db.Column(db.String, unique=True, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, default=1)
+    reserved = db.Column(db.Integer, default=0)
+    shipment = db.Column(db.Integer, default=0)
+    total = db.Column(db.Integer, default=0)
+    limit = db.Column(db.Integer, default=0)
+    description = db.Column(db.String, unique=False, nullable=True)
+    main_category = db.Column(db.Integer, db.ForeignKey(Category.id), nullable=True)
+
+    def __init__(self, name, thumb, description, image, price, main_category=0, limit=5):
+        self.name = name
+        self.thumb = thumb
+        self.image = image
+        self.price = price
+        self.description = description
+        self.reserved = 0
+        self.shipment = 0
+        self.total = 0
+        self.limit = limit
+        self.main_category = main_category
+
+    def __repr__(self):
+        return f"Produto {self.name} (R$ {round(self.price,2)})"
   
 class ProductCategory(db.Model):
     __tablename__ = 'product_category'
