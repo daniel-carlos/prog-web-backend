@@ -1,5 +1,5 @@
 ![Python](https://img.shields.io/badge/python-red)
-![Flask](https://img.shields.io/badge/python-purple)
+![Flask](https://img.shields.io/badge/flask-purple)
 
 # Ecommerce (Backend)
 Este projeto é uma API REST desenvolvida por Daniel Carlos para a disciplina de Programação para Web do curso de Sistemas e Mídias Digitais (UFC)
